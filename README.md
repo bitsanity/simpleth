@@ -1,13 +1,21 @@
 # simpleth
 
-This is a new [keymaster](https://github.com/bitsanity/keymaster) plus support for offline transaction generation.
+A new version of [keymaster](https://github.com/bitsanity/keymaster) with added
+support for signing offline transactions.
 
 # Features
 
 * Fully [ADILOS](https://github.com/bitsanity/adilos) compatible with [gatekeeper](https://github.com/bitsanity/gatekeeper) and [kgagent](https://github.com/bitsanity/kgagent)
-* Redone as webapp with [Apache Cordova](https://cordova.apache.org/), for cross-platform compatibility (Android, iOS)
-* All script - no native C library
-* Being a keymaster, user can login by ADILOS challenge/response
-* **User can sign a 32-byte message hash value to sign offline Ethereum transactions**
-* On scanning an ADILOS challenge, advises whether a kgagent is present (desirable, sometimes)
-* On scanning a 32-byte hash, advises one may be about to spend crypto (desirable, sometimes)
+* Rewritten in javascript and React Native [React Native](https://reactnative.dev/) for cross-platform compatibility (Android, iOS)
+* App and all dependencies are 100% open source
+
+# Use Cases
+
+* Login, identify, or open a lock by returning an ADILOS response to a challenge
+* Advise if a kgagent is party
+* Create an ADILOS challenge and scan someone else's response
+* Show key as Public Key
+* Show key as Ethereum Address
+* Sign a 32-byte message hash and return to form an offline Ethereum transaction that can be submitted on your behalf
+* Warn the user when signing a message hash that the signature could be used to spend (your) value
+
