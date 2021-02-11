@@ -18,4 +18,4 @@ support for signing offline transactions.
 * Show key as Ethereum Address
 * Sign a 32-byte message hash and return to form an offline Ethereum transaction that can be submitted on your behalf
 * Warn the user when signing a message hash that the signature could be used to spend (your) value
-
+* Added a basic backup/restore capability
