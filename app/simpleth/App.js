@@ -443,7 +443,8 @@ class KeyNameDialog extends React.Component {
     for( let ii = 0; ii < global.simpleth.wallet.length; ii++ )
       if (this.value == global.simpleth.wallet[ii].keyname) return;
 
-    let it = { keyname:this.value, privkey:this.merkle }
+    let it = { keyname:this.value, privkey:this.merkle };
+
     global.simpleth.wallet.push( it );
     storeData();
 
@@ -528,7 +529,7 @@ class NewKeyScreen extends React.Component {
     let newrand = crypto.getRandomValues( new Uint8Array(32) );
     let hasher = hashlib.sha256();
 
-    hasher.update( this.merkle, 'hex' )
+    hasher.update( this.merkle, 'hex' );
     hasher.update( newrand );
     hasher.update( new Date().getTime() );
     hasher.update( '' + x + '' + y );
@@ -751,17 +752,16 @@ class KeyDetailsScreen extends React.Component {
   }
 
   setKeyValueToPubkey = () => {
-    let pvk = Uint8Array.from(Buffer.from(this.keyobj.privkey,'hex'));
-    this.keyvalue = '0x' +
-      aesjs.utils.hex.fromBytes(secp256k1.publicKeyCreate(pvk, true));
+    let pkb = Buffer.from( this.keyobj.privkey, 'hex' );
+    let pub = secp256k1.publicKeyCreate( pkb, true );
+    this.keyvalue = '0x' + aesjs.utils.hex.fromBytes( pub );
   }
 
   setKeyValueToAddress = () => {
-    let pvk = Uint8Array.from(Buffer.from(this.keyobj.privkey,'hex'));
-    // drop the "0x04" at the start and prefix the result with "0x"
-    let pub = '0x' +
-      aesjs.utils.hex.fromBytes(secp256k1.publicKeyCreate(pvk, false)).slice(4);
-    let addr = '0x' + ethers.keccak256( pub ).slice( 26 );
+    let pkb = Buffer.from( this.keyobj.privkey, 'hex' );
+    // ethereum removes the leading 04 byte from the pubkey before hashing it
+    let pub = Buffer.from( secp256k1.publicKeyCreate(pkb, false).slice(1) );
+    let addr = '0x' + ethers.keccak256( pub ).slice( -40 ); // 20 bytes, 40 ch
     this.keyvalue = addr;
   }
 
