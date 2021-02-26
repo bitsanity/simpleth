@@ -428,7 +428,7 @@ class KeyNameDialog extends React.Component {
   constructor({route, navigation}) {
     super();
     this.nav = navigation;
-    this.merkle = '' + route.params.merkle;
+    this.keyhash = '' + route.params.keyhash;
     this.setText = this.setText.bind( this );
     this.okay = this.okay.bind( this );
   }
@@ -443,7 +443,7 @@ class KeyNameDialog extends React.Component {
     for( let ii = 0; ii < global.simpleth.wallet.length; ii++ )
       if (this.value == global.simpleth.wallet[ii].keyname) return;
 
-    let it = { keyname:this.value, privkey:this.merkle };
+    let it = { keyname:this.value, privkey:this.keyhash };
 
     global.simpleth.wallet.push( it );
     storeData();
@@ -506,7 +506,7 @@ class NewKeyScreen extends React.Component {
       ["8","9","A","B"], 
       ["C","D","E","F"]
     ]; 
-    this.merkle =
+    this.keyhash =
       "0000000000000000000000000000000000000000000000000000000000000000";
     this.showDialog = false;
   }
@@ -520,7 +520,11 @@ class NewKeyScreen extends React.Component {
         if (this.data[row][col] != '') done = false;
 
     if (done) {
-      this.nav.navigate('NewKeyName',{merkle:this.merkle} );
+      // KNOWN TEST VECTOR =====
+      //this.keyhash =
+      //  "0bce878dba9cce506e81da71bb00558d1684979711cf2833bab06388f715c01a";
+
+      this.nav.navigate('NewKeyName',{keyhash:this.keyhash} );
     }
 
     // combine computer random plus user's randomish sequence and sorta random
@@ -529,11 +533,11 @@ class NewKeyScreen extends React.Component {
     let newrand = crypto.getRandomValues( new Uint8Array(32) );
     let hasher = hashlib.sha256();
 
-    hasher.update( this.merkle, 'hex' );
+    hasher.update( this.keyhash, 'hex' );
     hasher.update( newrand );
     hasher.update( new Date().getTime() );
     hasher.update( '' + x + '' + y );
-    this.merkle = hasher.digest('hex');
+    this.keyhash = hasher.digest('hex');
 
     this.forceUpdate();
   }
@@ -633,8 +637,8 @@ class NewKeyScreen extends React.Component {
                        justifyContent:'space-between' }}>
 
           <Text style={{fontWeight:'bold'}}>Merkle: </Text>
-          <Text>{ '0x' + this.merkle.substring(0,4) +
-                  ' ... ' + this.merkle.substring(28,32) }</Text>
+          <Text>{ '0x' + this.keyhash.substring(0,4) +
+                  ' ... ' + this.keyhash.substring(28,32) }</Text>
         </View>
 
         <View style={{ flex:1 }}></View>
@@ -876,18 +880,22 @@ class QRScannedScreen extends React.Component {
         this.foundAgent = adilos.agentInChallenge( this.qrval );
       }
       else {
+        if (this.qrval.startsWith('0x'))
+          this.qrval = this.qrval.slice(2);
+
         let msg = Uint8Array.from( Buffer.from(this.qrval,'hex') );
 
         if (msg.length == 32) {
           let sigObj = secp256k1.ecdsaSign( msg, pvkey );
-          this.response = aesjs.utils.hex.fromBytes( sigObj.signature );
+          let dersig = secp256k1.signatureExport( sigObj.signature );
+          this.response = aesjs.utils.hex.fromBytes( dersig );
         }
         else {
           this.response = strings[locale].BadHashLen + ": " + msg.length;
         }
       }
     } catch( e ) {
-        this.response = "Exception: " + e.getMessage();
+        this.response = "Exception: " + e.toString();
     }
   }
 
