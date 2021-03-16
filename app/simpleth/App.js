@@ -43,24 +43,23 @@ var strings = {
     SplashName:"Home",
     SplashGoButton:"Enter",
     PIN:"PIN",
-    EnterPIN:"Please Enter Your 6-Digit Code:",
+    EnterPIN:"Please Enter 6-Digit Code (PIN):",
     KeyList:"Key List",
-    ShowAs:"Show Key As:",
+    ShowAs:"Show:",
     NewKeyButton:"New Key",
     BackupButton:"Backup/Restore",
     Backup:"Backup",
-    BackupInstructions:"Click 'Copy' button to copy your encrypted wallet to the clipboard. Paste it in a safe location of your choice. You will need that same data AND your current PIN to restore your wallet.",
+    BackupInstructions:"'Copy' button places your encrypted wallet in the clipboard. Backup this data and your PIN. You will need the data and PIN to restore your wallet.",
     CopyButton:"Copy",
     RestoreButton:"Restore",
-    RestoreInstructions:"WARNING: This will overwrite simpleth's current data and destroy any keys in your app now. Please be certain. Enter previous backup data below, then click 'Restore'. There is no undo.",
+    RestoreInstructions:"WARN: This action replaces simpleth's data on your device. Paste previous backup data below and click 'Restore'. Please be sure - there is no undo.",
     ClickBtnsPrompt:"Click each button, any order:",
     NewKeyName:"New Key Name:",
     OkayButton:"OKAY",
     CancelButton:"CANCEL",
     KeyDetails:"Key Details",
-    KeyDetailsLabel:"Key:",
     IdentifyButton:"Identify",
-    SignSpendButton:"Sign Hash",
+    SignSpendButton:"Sign/Spend",
     ScanQR:"Scan QR",
     ResponseNotice:"Show This Response",
     ToChallenger:"to Challenger",
@@ -521,7 +520,7 @@ class NewKeyScreen extends React.Component {
 
     if (done) {
       // KNOWN TEST VECTOR =====
-      //this.keyhash =
+      // this.keyhash =
       //  "0bce878dba9cce506e81da71bb00558d1684979711cf2833bab06388f715c01a";
 
       this.nav.navigate('NewKeyName',{keyhash:this.keyhash} );
@@ -674,6 +673,7 @@ class BackupRestoreScreen extends React.Component {
       if (red != null && red.wallet != null) {
         global.simpleth = red;
         storeData();
+        getStoredData();
         setTimeout( () => {this.nav.navigate('KeyList')}, 500 );
       }
       else {
@@ -783,11 +783,11 @@ class KeyDetailsScreen extends React.Component {
     return (
       <View style={styles.container}>
 
-        <Text style={styles.txtlabel}>{strings[locale].KeyDetailsLabel + ' ' +
-           this.keyobj.keyname }
-        </Text>
+        <Text style={styles.txtlabel}>{this.keyobj.keyname}</Text>
 
-        <Text style={styles.txtlabel}>{strings[locale].ShowAs}</Text>
+        <Text style={{fontWeight:'bold',fontSize:14,padding:10}}>
+          {strings[locale].ShowAs}
+        </Text>
 
         <RadioForm
           buttonColor={'#006400'}
@@ -888,10 +888,17 @@ class QRScannedScreen extends React.Component {
         if (msg.length == 32) {
           let sigObj = secp256k1.ecdsaSign( msg, pvkey );
           let dersig = secp256k1.signatureExport( sigObj.signature );
-          this.response = aesjs.utils.hex.fromBytes( dersig );
+
+          // signature has only (r,s) but we'll need v on the other side to
+          // make an Ethereum transaction, so attach v byte to the end
+          let sigmsg = new Uint8Array( dersig.length + 1 );
+          sigmsg.set( dersig, 0 );
+          sigmsg[sigmsg.length - 1] = sigObj.recid;
+          this.response = aesjs.utils.hex.fromBytes( sigmsg );
         }
         else {
           this.response = strings[locale].BadHashLen + ": " + msg.length;
+          console.log( 'qr: ' + this.qrval + '\nmsg: ' + msg.toString('hex') );
         }
       }
     } catch( e ) {
