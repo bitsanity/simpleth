@@ -29,7 +29,7 @@ const hashlib = require( 'hash.js' );
 const secp256k1 = require( 'secp256k1' );
 const aesjs = require( 'aes-js' );
 const ethers = require( 'ethers' ).utils;
-const adilos = require( './adilos' );
+const adilos = require( 'adilosjs' );
 
 const keyimg = require('./img/keylogo.png');
 const keyicon = require('./img/keyicon.png');
