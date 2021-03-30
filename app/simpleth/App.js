@@ -639,9 +639,10 @@ class NewKeyScreen extends React.Component {
                        maxHeight:50,
                        justifyContent:'space-between' }}>
 
-          <Text style={{fontWeight:'bold'}}>Merkle: </Text>
-          <Text>{ '0x' + this.keyhash.substring(0,4) +
-                  ' ... ' + this.keyhash.substring(28,32) }</Text>
+          <Text style={[styles.txtdata,styles.fainttxt,{fontWeight:'bold'}]}>Hash: </Text>
+          <Text style={[styles.txtdata,styles.fainttxt]}>
+            { '0x' + this.keyhash.substring(0,4) +
+              ' ... ' + this.keyhash.substring(28,32) }</Text>
         </View>
 
         <View style={{ flex:1 }}></View>
@@ -938,6 +939,7 @@ class QRScannedScreen extends React.Component {
 
         <Text
           style={ [ styles.txtdata,
+                    {fontSize:10},
                    (this.isADILOS) ? styles.oktext : styles.warntext ]
           }>{this.response}</Text>
 
