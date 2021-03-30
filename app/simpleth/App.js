@@ -45,7 +45,7 @@ var strings = {
     PIN:"PIN",
     EnterPIN:"Please Enter 6-Digit Code (PIN):",
     KeyList:"Key List",
-    ShowAs:"Show:",
+    ShowAs:"Display As:",
     NewKeyButton:"New Key",
     BackupButton:"Backup/Restore",
     Backup:"Backup",
@@ -62,6 +62,7 @@ var strings = {
     SignSpendButton:"Sign/Spend",
     ScanQR:"Scan QR",
     ResponseNotice:"Show This Response",
+    AgentDetected:"KG Agent Detected",
     ToChallenger:"to Challenger",
     SignSpendWarn:"WARNING: May Spend Funds.",
     NotADILOS:"ERROR: Not ADILOS Challenge",
@@ -106,6 +107,9 @@ const styles = StyleSheet.create({
   },
   warntext: {
     color: 'darkred',
+  },
+  fainttxt: {
+    color: 'grey',
   },
   warnbutton: {
     borderColor: 'darkred'
@@ -749,7 +753,7 @@ class KeyDetailsScreen extends React.Component {
 
     this.radio_props = [
       {label: 'EC Public Key', value: 0},
-      {label: 'Ethereum Addr', value: 1}
+      {label: 'Ethereum Address', value: 1}
     ];
 
     this.setKeyValueToPubkey();
@@ -803,7 +807,7 @@ class KeyDetailsScreen extends React.Component {
         <QRCode value={this.keyvalue} color={'darkgreen'} size={250} />
         <View style={{ padding:10 }}></View>
 
-        <Text style={[styles.txtdata,{fontSize:10}]}>{this.keyvalue}</Text>
+        <Text style={[styles.txtdata,styles.fainttxt,{fontSize:10}]}>{this.keyvalue}</Text>
 
         <View style={ [styles.container, {flexDirection:'row'} ]}>
           <TouchableOpacity
@@ -940,7 +944,7 @@ class QRScannedScreen extends React.Component {
         <View style={{ padding:10 }}></View>
 
         <Text style={ (this.foundAgent) ? styles.txtdata : {display:'none'} }>
-          KGAgent Detected
+          strings[locale].AgentDetected
         </Text>
       </View>
     );
