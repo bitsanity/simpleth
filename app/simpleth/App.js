@@ -673,6 +673,7 @@ class BackupRestoreScreen extends React.Component {
     let red = null;
     try {
       let redtxt = blackToRed( this.restoreTxt );
+
       red = JSON.parse( redtxt );
 
       if (red != null && red.wallet != null) {
@@ -685,7 +686,7 @@ class BackupRestoreScreen extends React.Component {
         console.log( "has to be a simpleth backup" );
       }
     } catch(e) {
-      console.log( "failed to parse: " + e.getMessage() );
+      console.log( "failed to parse: " + e.toString() );
     }
   }
 
@@ -946,7 +947,7 @@ class QRScannedScreen extends React.Component {
         <View style={{ padding:10 }}></View>
 
         <Text style={ (this.foundAgent) ? styles.txtdata : {display:'none'} }>
-          strings[locale].AgentDetected
+          {strings[locale].AgentDetected}
         </Text>
       </View>
     );
